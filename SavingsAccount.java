@@ -1,7 +1,7 @@
 /*******************************************************************
 * Name: Holly Hebert
-* Date: November 13, 2025
-* Assignment: SDC330 Week 1 - Banking Inheritance & Composition
+* Date: November 20, 2025
+* Assignment: SDC330 Week 2 - Banking Inheritance & Composition
 * Class: SavingsAccount (Derived Class)
 * Description:
 * This class extends Account to represent a savings account.

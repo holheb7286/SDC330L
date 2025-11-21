@@ -1,47 +1,74 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: November 13, 2025
+ * Date: November 20, 2025
  * Assignment: SDC330 Week 1 - Banking Inheritance & Composition
  * Class: User (Composition Demo)
  * Description:
- *   This class demonstrates composition. A User "has" accounts,
- *   which are stored in a list. It contains user details and provides
- *   methods to add accounts and display the user's full profile.
+ * This class demonstrates composition. A User "has" accounts,
+ * which are stored in a list. It contains user details and provides
+ * methods to add accounts and display the user's full profile.
  *******************************************************************/
 
 import java.util.ArrayList;
 
-class User {
-    private String name;
-    private String email;
-    private ArrayList<Account> accounts; // Composition demonstrated here
+public class User {
 
-    public User(String name, String email) {
+    private String name;
+    private String address;
+    private String phone;
+    private ArrayList<Account> accounts;
+
+    // Constructor used in BankingApp (Week 2 design)
+    public User(String name, String address, String phone) {
         this.name = name;
-        this.email = email;
+        this.address = address;
+        this.phone = phone;
         this.accounts = new ArrayList<>();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
+    // --- Composition Methods ---
 
     public void addAccount(Account account) {
         accounts.add(account);
     }
 
-    public String getUserProfile() {
-        StringBuilder profile = new StringBuilder();
-        profile.append(String.format("User Name: %s\nEmail: %s\n\nAccounts:\n", name, email));
+    public ArrayList<Account> getAccounts() {
+        return accounts;
+    }
 
+    // --- User Info Getters/Setters ---
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    // --- Utility Method for BankManager ---
+    public Account findAccount(String accountNumber) {
         for (Account acc : accounts) {
-            profile.append(acc.getInfo()).append("\n\n");
+            if (acc.getAccountNumber().equals(accountNumber)) {
+                return acc;
+            }
         }
-
-        return profile.toString();
+        return null; // Not found
     }
 }

@@ -1,13 +1,13 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: November 13, 2025
- * Assignment: SDC330 Week 1 - Banking Inheritance & Composition
+ * Date: November 20, 2025
+ * Assignment: SDC330 Week 2 - Banking Inheritance & Composition
  * Class: Account (Base Class)
  * Description:
- *   This class represents a general bank account. It contains basic
- *   information such as account number and balance. It provides
- *   simple methods for deposits, withdrawals, and retrieving account
- *   details.
+ * This class represents a general bank account. It contains basic
+ * information such as account number and balance. It provides
+ * simple methods for deposits, withdrawals, and retrieving account
+ * details.
  *******************************************************************/
 
 public class Account {
