@@ -1,2 +1,2 @@
-# SDC330
-Advanced Object Oriented Programming Using Java
+# SDC330L
+Advanced Object-Oriented Programming Using Java Lab
