@@ -1,20 +1,34 @@
-/*
-* Name: Holly Hebert
-* Date: November 20, 2025
-* Assignment: SDC330 Week 2 - Bank Manager Implementation
-* Class: BankManager
-* Description:
-* This class implements the BankInterface, providing concrete
-* methods for managing bank operations such as creating accounts,
-* displaying account information, updating user details, and
-* processing transactions. It demonstrates polymorphism by handling
-* different account types through a common interface.
- */
+/*******************************************************************
+ * Name: Holly Hebert
+ * Date: November 30, 2025
+ * Assignment: SDC330 Week 3 – Abstraction, Constructors, Access Specifiers
+ * Class: BankManager
+ * 
+ * Description:
+ * This class implements the BankInterface and provides concrete 
+ * behavior for high-level banking operations such as creating 
+ * accounts, displaying account lists, updating user information, 
+ * and processing transactions.
+ * 
+ * Week 3 Notes:
+ * - This class demonstrates **interface-based abstraction**, since 
+ *   BankManager must provide implementations for all methods 
+ *   defined in BankInterface.
+ *
+ * - Although Week 3 focuses primarily on abstract classes,
+ *   constructors, and access specifiers, this class remains unchanged
+ *   from Week 2 because it does not itself require modification to 
+ *   demonstrate those concepts. 
+ *
+ * - BankManager will be used again in Week 4 when database 
+ *   functionality is introduced.
+ *******************************************************************/
 
 import java.util.Scanner;
 
 public class BankManager implements BankInterface {
 
+    // Scanner is private, demonstrating encapsulation and correct access specifier usage.
     private Scanner scanner = new Scanner(System.in);
 
     /*
@@ -22,7 +36,7 @@ public class BankManager implements BankInterface {
      * This method demonstrates:
      *   - Interface implementation (method required by BankInterface)
      *   - Object instantiation of derived classes (Checking, Savings, IRA)
-     *   - Basic interaction between manager and User (composition)
+     *   - Composition (User "has" a list of accounts)
     */
     @Override
     public void createAccount(User user) {
@@ -40,26 +54,21 @@ public class BankManager implements BankInterface {
         double balance = scanner.nextDouble();
         scanner.nextLine();
 
-        
         // Generate a simple random account number
         String accountNumber = "ACCT" + (int)(Math.random() * 10000);
 
-        // Based on user choice, create the correct account type
         switch (choice) {
             case 1:
-                // Creates a CheckingAccount and adds it to the user's account list
                 user.addAccount(new CheckingAccount(accountNumber, balance));
                 System.out.println("Checking account created!");
                 break;
 
             case 2:
-                // Creates a SavingsAccount and adds it to the user's account list
                 user.addAccount(new SavingsAccount(accountNumber, balance));
                 System.out.println("Savings account created!");
                 break;
 
             case 3:
-                // Creates an IRAAccount with a contribution amount
                 System.out.print("Enter yearly contribution amount: ");
                 double contribution = scanner.nextDouble();
                 scanner.nextLine();
@@ -76,8 +85,7 @@ public class BankManager implements BankInterface {
     public void displayAccounts(User user) {
         System.out.println("\n--- Account Summary ---");
 
-        // Demonstrates POLYMORPHISM:
-        // Every account type responds to getInfo() in its own way.
+        // Demonstrates polymorphism by calling getInfo() on different account types.
         for (Account acc : user.getAccounts()) {
             System.out.println(acc.getInfo());
         }

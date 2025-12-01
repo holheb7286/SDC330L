@@ -1,24 +1,47 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: November 20, 2025
- * Assignment: SDC330 Week 1 - Banking Inheritance & Composition
+ * Date: November 30, 2025
+ * Assignment: SDC330 Week 3 – Abstraction, Constructors, Access Specifiers
  * Class: User (Composition Demo)
+ * 
  * Description:
- * This class demonstrates composition. A User "has" accounts,
- * which are stored in a list. It contains user details and provides
- * methods to add accounts and display the user's full profile.
+ * This class represents a bank user and demonstrates the concept of
+ * COMPOSITION: a User "has" multiple Accounts, stored in a list.
+ *
+ * Week 3 Concepts Demonstrated:
+ *
+ *  - Access Specifiers:
+ *        All fields are private to enforce encapsulation.
+ *        Public getters/setters provide controlled access.
+ *
+ *  - Constructors:
+ *        Multiple constructors demonstrate constructor overloading:
+ *        → Full constructor (name, address, phone)
+ *        → Overloaded constructor using default placeholder values
+ *
+ *  - Abstraction (Indirect Participation):
+ *        User stores Account objects, which are instances of
+ *        abstract-type references. The actual Account subclass
+ *        (CheckingAccount, SavingsAccount, IRAAccount) is resolved
+ *        polymorphically at runtime.
  *******************************************************************/
 
 import java.util.ArrayList;
 
 public class User {
 
+    // -------------------------------------------------------------
+    // Private fields ensure proper encapsulation (Week 3 requirement)
+    // -------------------------------------------------------------
     private String name;
     private String address;
     private String phone;
     private ArrayList<Account> accounts;
 
-    // Constructor used in BankingApp (Week 2 design)
+    // -------------------------------------------------------------
+    // Constructor #1 – Full constructor
+    // Used for realistic application instantiation.
+    // -------------------------------------------------------------
     public User(String name, String address, String phone) {
         this.name = name;
         this.address = address;
@@ -26,8 +49,18 @@ public class User {
         this.accounts = new ArrayList<>();
     }
 
-    // --- Composition Methods ---
+    // -------------------------------------------------------------
+    // Constructor #2 – Overloaded constructor
+    // Demonstrates constructor overloading for Week 3.
+    // Provides defaults if only the name is known.
+    // -------------------------------------------------------------
+    public User(String name) {
+        this(name, "Unknown Address", "N/A");
+    }
 
+    // -------------------------------------------------------------
+    // Composition: A User "has" accounts
+    // -------------------------------------------------------------
     public void addAccount(Account account) {
         accounts.add(account);
     }
@@ -36,8 +69,9 @@ public class User {
         return accounts;
     }
 
-    // --- User Info Getters/Setters ---
-
+    // -------------------------------------------------------------
+    // Getters and Setters – Public for controlled external access
+    // -------------------------------------------------------------
     public String getName() {
         return name;
     }
@@ -62,7 +96,10 @@ public class User {
         this.phone = phone;
     }
 
-    // --- Utility Method for BankManager ---
+    // -------------------------------------------------------------
+    // Utility: Search the user's account list by account number.
+    // This supports BankManager operations.
+    // -------------------------------------------------------------
     public Account findAccount(String accountNumber) {
         for (Account acc : accounts) {
             if (acc.getAccountNumber().equals(accountNumber)) {

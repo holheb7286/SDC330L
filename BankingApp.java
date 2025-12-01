@@ -1,79 +1,104 @@
-/*
-* Name: Holly Hebert
-* Date: November 20, 2025
-* Assignment: SDC330 Week 2 - Banking Application
-* Class: BankingApp
-* Description:
-* This is the main application class for the Banking Application.
-* It provides a console-based interface for users to interact
-* with the banking system, demonstrating OOP concepts such as
-* inheritance, polymorphism, composition, and interface implementation.
-*/
-
-import java.util.Scanner;
+/*******************************************************************
+ * Name: Holly Hebert
+ * Date: November 30, 2025
+ * Assignment: SDC330 Week 3 – Abstraction, Constructors, Access Specifiers
+ * Class: BankingAppWeek3 (Demonstration Application)
+ * 
+ * Description:
+ * This small demonstration program showcases key OOP concepts:
+ * 
+ *  - Abstraction:
+ *       The Account class is abstract and cannot be instantiated.
+ *       Derived classes override the abstract getInfo() method.
+ *
+ *  - Constructors:
+ *       Multiple constructors in the Account hierarchy allow flexible
+ *       object creation (e.g., full-argument vs. accountNumber-only).
+ *
+ *  - Access Specifiers:
+ *       - private fields (encapsulation)
+ *       - protected constructors (only child classes can instantiate)
+ *       - public methods (accessed externally by application classes)
+ *
+ *  - Instantiation & Display:
+ *       Objects are instantiated with realistic data and printed.
+ *
+ * This Week 3 app is intentionally simple and separate from the full
+ * Week 2 menu-driven application. It serves as a learning checkpoint
+ * before implementing database features in Week 4.
+ *******************************************************************/
 
 public class BankingApp {
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        BankManager manager = new BankManager();
-
-        // Create a sample user (Week 2 requires realistic object instantiation)
-        User user = new User("Holly Hebert", "123 Main St", "555-1234");
 
         System.out.println("========================================");
-        System.out.println("     Week 2 - Banking Application     ");
-        System.out.println("            By: Holly Hebert          ");
-        System.out.println("========================================");
+        System.out.println("   Week 3 Demonstration - Banking App   ");
+        System.out.println("            By: Holly Hebert            ");
+        System.out.println("========================================\n");
 
-        System.out.println("\nWelcome! This application demonstrates OOP concepts:");
-        System.out.println("- Inheritance");
-        System.out.println("- Polymorphism");
-        System.out.println("- Composition");
-        System.out.println("- Interface implementation");
-        System.out.println("\nChoose an action from the menu.\n");
+        System.out.println("Welcome! This demo showcases abstraction, constructors,");
+        System.out.println("and access specifiers in the Banking Application.\n");
 
-        int choice;
+        // ----------------------------------------------------------
+        // Demonstrate Constructors & Abstraction
+        // ----------------------------------------------------------
 
-        do {
-            System.out.println("\n--- Main Menu ---");
-            System.out.println("1. Create Account");
-            System.out.println("2. Display Accounts");
-            System.out.println("3. Update User Info");
-            System.out.println("4. Process Transaction");
-            System.out.println("5. Exit");
-            System.out.print("Enter choice: ");
+        // CheckingAccount: using FULL constructor (acct number + balance)
+        CheckingAccount checking1 = new CheckingAccount("ACCT1001", 250.00);
 
-            choice = scanner.nextInt();
-            scanner.nextLine();
+        // CheckingAccount: using OVERLOADED constructor (acct number only)
+        CheckingAccount checking2 = new CheckingAccount("ACCT1002");
 
-            switch (choice) {
-                case 1:
-                    manager.createAccount(user);
-                    break;
+        // SavingsAccount: using FULL constructor
+        SavingsAccount savings1 = new SavingsAccount("ACCT2001", 500.00);
 
-                case 2:
-                    manager.displayAccounts(user);
-                    break;
+        // SavingsAccount: using OVERLOADED constructor
+        SavingsAccount savings2 = new SavingsAccount("ACCT2002");
 
-                case 3:
-                    manager.updateUserInfo(user);
-                    break;
+        // IRAAccount: using FULL constructor
+        IRAAccount ira1 = new IRAAccount("ACCT3001", 1500.00, 300.00);
 
-                case 4:
-                    manager.processTransaction(user);
-                    break;
+        // ----------------------------------------------------------
+        // Demonstrate Polymorphism & Abstraction
+        // ----------------------------------------------------------
+        // Account is abstract → cannot instantiate directly.
+        // But we CAN hold child objects with an Account reference.
 
-                case 5:
-                    System.out.println("Goodbye!");
-                    break;
+        Account[] accounts = { checking1, checking2, savings1, savings2, ira1 };
 
-                default:
-                    System.out.println("Invalid option.");
-            }
+        System.out.println("Displaying Account Information:\n");
 
-        } while (choice != 5);
+        for (Account acc : accounts) {
+            // Polymorphism: getInfo() calls the child’s overridden version.
+            System.out.println(acc.getInfo());
+        }
 
-        scanner.close();
+        // ----------------------------------------------------------
+        // Demonstrate Access Specifiers
+        // ----------------------------------------------------------
+        System.out.println("Access Specifier Demonstration:\n");
+        System.out.println("- Private fields (e.g., balance) cannot be accessed directly.");
+        System.out.println("- Protected constructors prevent direct Account instantiation.");
+        System.out.println("- Public getters and methods allow safe, controlled access.\n");
+
+        // ----------------------------------------------------------
+        // Demonstrate Composition (User has multiple Accounts)
+        // ----------------------------------------------------------
+        User demoUser = new User("Holly Hebert", "123 Main St", "555-1234");
+
+        demoUser.addAccount(checking1);
+        demoUser.addAccount(savings1);
+        demoUser.addAccount(ira1);
+
+        System.out.println("User & Composition Demonstration:");
+        System.out.println("User Name: " + demoUser.getName());
+        System.out.println("\nAccounts Belonging to This User:\n");
+
+        for (Account acc : demoUser.getAccounts()) {
+            System.out.println(acc.getInfo());
+        }
+
+        System.out.println("\nEnd of Week 3 demonstration.\n");
     }
 }
