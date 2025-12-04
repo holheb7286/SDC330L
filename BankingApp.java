@@ -1,104 +1,163 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: November 30, 2025
- * Assignment: SDC330 Week 3 – Abstraction, Constructors, Access Specifiers
- * Class: BankingAppWeek3 (Demonstration Application)
- * 
- * Description:
- * This small demonstration program showcases key OOP concepts:
- * 
- *  - Abstraction:
- *       The Account class is abstract and cannot be instantiated.
- *       Derived classes override the abstract getInfo() method.
+ * Date: December 2, 2025
+ * Assignment: SDC330 Week 4 – Database Interactions (SQLite)
+ * Class: BankingAppWeek4 (Demonstration)
  *
- *  - Constructors:
- *       Multiple constructors in the Account hierarchy allow flexible
- *       object creation (e.g., full-argument vs. accountNumber-only).
+ * Purpose:
+ *  - Small console menu that demonstrates full CRUD operations
+ *    against an SQLite database via BankManagerDB.
+ *  - Shows example flows for creating users/accounts, reading lists,
+ *    updating deposits/withdrawals, and deleting accounts/users.
  *
- *  - Access Specifiers:
- *       - private fields (encapsulation)
- *       - protected constructors (only child classes can instantiate)
- *       - public methods (accessed externally by application classes)
- *
- *  - Instantiation & Display:
- *       Objects are instantiated with realistic data and printed.
- *
- * This Week 3 app is intentionally simple and separate from the full
- * Week 2 menu-driven application. It serves as a learning checkpoint
- * before implementing database features in Week 4.
+ * Instructions:
+ *  - When entering IDs, enter numeric user_id shown in "List Users".
+ *  - Account numbers are auto-generated and displayed when created.
+ *  - This demo stores data in banking.db in the working directory.
  *******************************************************************/
 
+import java.util.List;
+import java.util.Scanner;
 public class BankingApp {
 
     public static void main(String[] args) {
-
         System.out.println("========================================");
-        System.out.println("   Week 3 Demonstration - Banking App   ");
+        System.out.println("   Week 4 Demonstration - Banking App   ");
         System.out.println("            By: Holly Hebert            ");
         System.out.println("========================================\n");
 
-        System.out.println("Welcome! This demo showcases abstraction, constructors,");
-        System.out.println("and access specifiers in the Banking Application.\n");
+        System.out.println("Welcome! This demo shows basic database CRUD using SQLite.");
+        System.out.println("Notes: enter numeric IDs when prompted (user_id). Account numbers are");
+        System.out.println("auto-generated. Deleting a user will not automatically delete accounts");
+        System.out.println("unless you implement cascading FK; this demo keeps behavior explicit.\n");
 
-        // ----------------------------------------------------------
-        // Demonstrate Constructors & Abstraction
-        // ----------------------------------------------------------
+        DatabaseHelper dh = new DatabaseHelper();
+        BankManager manager = new BankManager(dh);
+        Scanner scanner = new Scanner(System.in);
+        boolean quit = false;
 
-        // CheckingAccount: using FULL constructor (acct number + balance)
-        CheckingAccount checking1 = new CheckingAccount("ACCT1001", 250.00);
+        while (!quit) {
+            System.out.println("\n--- Main Menu (Week 4 DB) ---");
+            System.out.println("1. Create User");
+            System.out.println("2. List Users");
+            System.out.println("3. Create Account (for user)");
+            System.out.println("4. List All Accounts");
+            System.out.println("5. List Accounts for User");
+            System.out.println("6. Deposit / Withdraw");
+            System.out.println("7. Update User Info");
+            System.out.println("8. Delete Account");
+            System.out.println("9. Delete User");
+            System.out.println("10. Exit");
+            System.out.print("Choice: ");
+            String choice = scanner.nextLine().trim();
 
-        // CheckingAccount: using OVERLOADED constructor (acct number only)
-        CheckingAccount checking2 = new CheckingAccount("ACCT1002");
+            switch (choice) {
+                case "1":
+                    System.out.print("Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Address: ");
+                    String addr = scanner.nextLine();
+                    System.out.print("Phone: ");
+                    String ph = scanner.nextLine();
+                    int newId = manager.createUser(name, addr, ph);
+                    if (newId > 0) System.out.println("Created user with ID: " + newId);
+                    else System.out.println("Failed to create user.");
+                    break;
 
-        // SavingsAccount: using FULL constructor
-        SavingsAccount savings1 = new SavingsAccount("ACCT2001", 500.00);
+                case "2":
+                    List<User> users = manager.getAllUsers();
+                    System.out.println("--- Users ---");
+                    if (users.isEmpty()) System.out.println("No users found.");
+                    else {
+                        // Note: User class doesn't carry DB id by design; to show ids,
+                        // you'd add an id field to User. For now we print name/address.
+                        for (User u : users) {
+                            System.out.println("Name: " + u.getName() + " | Address: " + u.getAddress() + " | Phone: " + u.getPhone());
+                        }
+                    }
+                    break;
 
-        // SavingsAccount: using OVERLOADED constructor
-        SavingsAccount savings2 = new SavingsAccount("ACCT2002");
+                case "3":
+                    System.out.print("User ID to attach account (or press Enter for none): ");
+                    String uidStr = scanner.nextLine().trim();
+                    Integer uid = null;
+                    if (!uidStr.isEmpty()) {
+                        try { uid = Integer.parseInt(uidStr); } catch (NumberFormatException e) { uid = null; }
+                    }
+                    System.out.print("Account type (Checking/Savings/IRA): ");
+                    String typ = scanner.nextLine();
+                    System.out.print("Starting balance: ");
+                    double bal = Double.parseDouble(scanner.nextLine().trim());
+                    String acctNum = "ACCT" + (int)(Math.random() * 100000);
+                    boolean created = manager.createAccountRecord(acctNum, bal, typ, uid);
+                    System.out.println(created ? "Created account: " + acctNum : "Failed to create account.");
+                    break;
 
-        // IRAAccount: using FULL constructor
-        IRAAccount ira1 = new IRAAccount("ACCT3001", 1500.00, 300.00);
+                case "4":
+                    List<String> allAccts = manager.getAllAccountsRaw();
+                    System.out.println("--- All Accounts ---");
+                    if (allAccts.isEmpty()) System.out.println("No accounts.");
+                    else allAccts.forEach(System.out::println);
+                    break;
 
-        // ----------------------------------------------------------
-        // Demonstrate Polymorphism & Abstraction
-        // ----------------------------------------------------------
-        // Account is abstract → cannot instantiate directly.
-        // But we CAN hold child objects with an Account reference.
+                case "5":
+                    System.out.print("Enter user ID: ");
+                    int qid = Integer.parseInt(scanner.nextLine().trim());
+                    List<String> userAccounts = manager.getAccountsByUser(qid);
+                    System.out.println("--- Accounts for User " + qid + " ---");
+                    if (userAccounts.isEmpty()) System.out.println("No accounts for that user.");
+                    else userAccounts.forEach(System.out::println);
+                    break;
 
-        Account[] accounts = { checking1, checking2, savings1, savings2, ira1 };
+                case "6":
+                    System.out.print("Account number: ");
+                    String accn = scanner.nextLine().trim();
+                    System.out.print("Deposit or Withdraw (D/W): ");
+                    String t = scanner.nextLine().trim().toUpperCase();
+                    System.out.print("Amount: ");
+                    double am = Double.parseDouble(scanner.nextLine().trim());
+                    double delta = t.equals("D") ? am : -am;
+                    boolean ok = manager.updateAccountBalance(accn, delta);
+                    System.out.println(ok ? "Transaction applied." : "Transaction failed.");
+                    break;
 
-        System.out.println("Displaying Account Information:\n");
+                case "7":
+                    System.out.print("Enter user ID to update: ");
+                    int uid2 = Integer.parseInt(scanner.nextLine().trim());
+                    System.out.print("New name: ");
+                    String nn = scanner.nextLine();
+                    System.out.print("New address: ");
+                    String na = scanner.nextLine();
+                    System.out.print("New phone: ");
+                    String np = scanner.nextLine();
+                    boolean updated = manager.updateUser(uid2, nn, na, np);
+                    System.out.println(updated ? "User updated." : "Update failed.");
+                    break;
 
-        for (Account acc : accounts) {
-            // Polymorphism: getInfo() calls the child’s overridden version.
-            System.out.println(acc.getInfo());
+                case "8":
+                    System.out.print("Account number to delete: ");
+                    String delAcct = scanner.nextLine().trim();
+                    boolean delOk = manager.deleteAccount(delAcct);
+                    System.out.println(delOk ? "Account deleted." : "Delete failed.");
+                    break;
+
+                case "9":
+                    System.out.print("User ID to delete: ");
+                    int delUid = Integer.parseInt(scanner.nextLine().trim());
+                    boolean delUserOk = manager.deleteUser(delUid);
+                    System.out.println(delUserOk ? "User deleted." : "Delete failed.");
+                    break;
+
+                case "10":
+                    quit = true;
+                    System.out.println("Goodbye!");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice.");
+            }
         }
 
-        // ----------------------------------------------------------
-        // Demonstrate Access Specifiers
-        // ----------------------------------------------------------
-        System.out.println("Access Specifier Demonstration:\n");
-        System.out.println("- Private fields (e.g., balance) cannot be accessed directly.");
-        System.out.println("- Protected constructors prevent direct Account instantiation.");
-        System.out.println("- Public getters and methods allow safe, controlled access.\n");
-
-        // ----------------------------------------------------------
-        // Demonstrate Composition (User has multiple Accounts)
-        // ----------------------------------------------------------
-        User demoUser = new User("Holly Hebert", "123 Main St", "555-1234");
-
-        demoUser.addAccount(checking1);
-        demoUser.addAccount(savings1);
-        demoUser.addAccount(ira1);
-
-        System.out.println("User & Composition Demonstration:");
-        System.out.println("User Name: " + demoUser.getName());
-        System.out.println("\nAccounts Belonging to This User:\n");
-
-        for (Account acc : demoUser.getAccounts()) {
-            System.out.println(acc.getInfo());
-        }
-
-        System.out.println("\nEnd of Week 3 demonstration.\n");
+        scanner.close();
     }
 }
