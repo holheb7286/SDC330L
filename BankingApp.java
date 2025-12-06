@@ -1,6 +1,6 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: December 2, 2025
+ * Date: December 5, 2025
  * Assignment: SDC330 Week 4 – Database Interactions (SQLite)
  * Class: BankingApp
  * Purpose:
@@ -72,27 +72,28 @@ public class BankingApp {
                     break;
                 }
 
-                case "3": {
-                    System.out.print("User ID to attach account (or press Enter for none): ");
-                    String uidStr = scanner.nextLine().trim();
-                    Integer uid = null;
-                    if (!uidStr.isEmpty()) {
-                        try { uid = Integer.parseInt(uidStr); } catch (Exception ignored) {}
-                    }
+                case "3":
+                    System.out.print("Enter EXISTING user ID to attach account: ");
+                    int userIdLink = Integer.parseInt(scanner.nextLine().trim());
 
                     System.out.print("Account type (Checking/Savings/IRA): ");
-                    String type = scanner.nextLine();
+                    String type = scanner.nextLine().trim();
 
                     System.out.print("Starting balance: ");
                     double bal = Double.parseDouble(scanner.nextLine().trim());
 
                     String acctNum = "ACCT" + (int)(Math.random() * 100000);
 
-                    boolean created = manager.createAccountRecord(acctNum, bal, type, uid);
-                    System.out.println(created ? "Created account: " + acctNum
-                                               : "Failed to create account.");
-                    break;
-                }
+                    boolean okCreate = manager.createAccountRecord(acctNum, bal, type, userIdLink);
+
+            if (okCreate) {
+                    System.out.println("Account created:");
+                    System.out.println("Account Number: " + acctNum);
+                    System.out.println("Linked to User ID: " + userIdLink);
+            } else {
+                    System.out.println("Failed to create account. Check that user ID exists.");
+            }
+            break;
 
                 case "4": {
                     List<String> accounts = manager.getAllAccountsFormatted();

@@ -1,6 +1,6 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: December 2, 2025
+ * Date: December 5, 2025
  * Assignment: SDC330 Week 4 – Database Interactions (SQLite)
  * Class: BankManager
  *
@@ -10,10 +10,10 @@
  *  - Ensures deposits, withdrawals, and deletes are fully saved.
  *
  * Notes on professor feedback:
- *  ✔ Deposits now correctly update the DB.
- *  ✔ User IDs are auto-generated and printed clearly.
- *  ✔ Account numbers are displayed so users can delete easily.
- *  ✔ Added getAccountsByUser(int) because BankingApp calls it.
+ *  Deposits now correctly update the DB.
+ *  User IDs are auto-generated and printed clearly.
+ *  Account numbers are displayed so users can delete easily.
+ *  Added getAccountsByUser(int) because BankingApp calls it.
  *******************************************************************/
 
 import java.sql.*;
@@ -68,7 +68,7 @@ public class BankManager implements BankInterface {
 
             while (rs.next()) {
                 users.add(String.format(
-                    "ID:%d  Name:%s  Address:%s  Phone:%s",
+                    "ID: %d  Name: %s  Address: %s  Phone: %s",
                     rs.getInt("user_id"),
                     rs.getString("name"),
                     rs.getString("address"),
@@ -147,7 +147,7 @@ public class BankManager implements BankInterface {
 
             while (rs.next()) {
                 out.add(String.format(
-                    "Account Num:%s | Type:%s | Balance:$%.2f | Account ID:%d | UserID:%s",
+                    "Account Num: %s | Type: %s | Balance: $%.2f | Account ID: %d | User ID: %s",
                     rs.getString("account_number"),
                     rs.getString("type"),
                     rs.getDouble("balance"),
@@ -181,7 +181,7 @@ public class BankManager implements BankInterface {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     out.add(String.format(
-                        "Account Num:%s | Type:%s | Balance:$%.2f | Account ID:%d",
+                        "Account Num: %s | Type: %s | Balance: $%.2f | Account ID: %d",
                         rs.getString("account_number"),
                         rs.getString("type"),
                         rs.getDouble("balance"),
