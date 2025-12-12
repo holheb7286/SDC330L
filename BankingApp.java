@@ -1,179 +1,93 @@
 /*******************************************************************
  * Name: Holly Hebert
- * Date: December 5, 2025
- * Assignment: SDC330 Week 4 – Database Interactions (SQLite)
- * Class: BankingApp
- * Purpose:
- *  - Provides a console menu for full CRUD operations using SQLite.
- *  - Works with the updated BankManager, ensuring all DB operations
- *    correctly record deposits, withdrawals, user creation, and deletes.
+ * Date: December 11, 2025
+ * Assignment: SDC330 Week 5 – Final
+ * Class: BankingApp (Final Demo)
+ *
+ * Final Notes:
+ *  - Uses a single shared Scanner to avoid resource conflicts.
+ *  - All interactive methods moved into BankManager.
+ *  - Main class cleanly drives menu navigation only.
  *******************************************************************/
 
-import java.util.List;
 import java.util.Scanner;
 
 public class BankingApp {
-
     public static void main(String[] args) {
         System.out.println("========================================");
-        System.out.println("   Week 4 Demonstration - Banking App   ");
+        System.out.println("      Week 5 - Banking Application      ");
         System.out.println("            By: Holly Hebert            ");
         System.out.println("========================================\n");
 
-        System.out.println("Welcome! This demo shows full CRUD with SQLite.");
-        System.out.println("IMPORTANT:");
-        System.out.println("User IDs are shown in 'List Users' (Option 2).");
-        System.out.println("Account numbers are auto-generated AND displayed.");
-        System.out.println("Always reference the printed ID/Account Number.\n");
-
-        DatabaseHelper dh = new DatabaseHelper();
-        BankManager manager = new BankManager(dh);
+        DatabaseHelper dbHelper = new DatabaseHelper();
         Scanner scanner = new Scanner(System.in);
+        BankManager manager = new BankManager(dbHelper, scanner);  // Shared Scanner injected
 
         boolean quit = false;
 
         while (!quit) {
-            System.out.println("\n--- Main Menu (Week 4 DB) ---");
-            System.out.println("1. Create User");
-            System.out.println("2. List Users (WITH IDs)");
-            System.out.println("3. Create Account (for user)");
-            System.out.println("4. List All Accounts");
-            System.out.println("5. List Accounts for User");
-            System.out.println("6. Deposit / Withdraw");
-            System.out.println("7. Update User Info");
-            System.out.println("8. Delete Account");
-            System.out.println("9. Delete User");
-            System.out.println("10. Exit");
+            System.out.println("\n--- Main Menu ---");
+            System.out.println("1) Create User");
+            System.out.println("2) List Users");
+            System.out.println("3) Create Account (link to user optional)");
+            System.out.println("4) List All Accounts");
+            System.out.println("5) List Accounts for User");
+            System.out.println("6) Deposit");
+            System.out.println("7) Withdraw");
+            System.out.println("8) Update User Info");
+            System.out.println("9) Delete Account");
+            System.out.println("10) Delete User");
+            System.out.println("11) Exit");
             System.out.print("Choice: ");
 
             String choice = scanner.nextLine().trim();
 
-            switch (choice) {
-
-                case "1": {
-                    System.out.print("Name: ");
-                    String name = scanner.nextLine();
-                    System.out.print("Address: ");
-                    String addr = scanner.nextLine();
-                    System.out.print("Phone: ");
-                    String ph = scanner.nextLine();
-
-                    int newId = manager.createUser(name, addr, ph);
-                    if (newId > 0) System.out.println("Created user with ID: " + newId);
-                    else System.out.println("Failed to create user.");
-                    break;
+            try {
+                switch (choice) {
+                    case "1":
+                        manager.createUserInteractive();
+                        break;
+                    case "2":
+                        manager.displayAllUsers();
+                        break;
+                    case "3":
+                        manager.createAccountInteractive();
+                        break;
+                    case "4":
+                        manager.displayAllAccounts();
+                        break;
+                    case "5":
+                        manager.displayAccountsByUser();
+                        break;
+                    case "6":
+                        manager.depositInteractive();
+                        break;
+                    case "7":
+                        manager.withdrawInteractive();
+                        break;
+                    case "8":
+                        manager.updateUserInteractive();
+                        break;
+                    case "9":
+                        manager.deleteAccountInteractive();
+                        break;
+                    case "10":
+                        manager.deleteUserInteractive();
+                        break;
+                    case "11":
+                        quit = true;
+                        System.out.println("Goodbye!");
+                        break;
+                    default:
+                        System.out.println("Invalid choice.");
                 }
-
-                case "2": {
-                    List<String> usersFormatted = manager.getAllUsersFormatted();
-                    System.out.println("--- Users (with IDs) ---");
-                    if (usersFormatted.isEmpty()) System.out.println("No users found.");
-                    else usersFormatted.forEach(System.out::println);
-                    break;
-                }
-
-                case "3":
-                    System.out.print("Enter EXISTING user ID to attach account: ");
-                    int userIdLink = Integer.parseInt(scanner.nextLine().trim());
-
-                    System.out.print("Account type (Checking/Savings/IRA): ");
-                    String type = scanner.nextLine().trim();
-
-                    System.out.print("Starting balance: ");
-                    double bal = Double.parseDouble(scanner.nextLine().trim());
-
-                    String acctNum = "ACCT" + (int)(Math.random() * 100000);
-
-                    boolean okCreate = manager.createAccountRecord(acctNum, bal, type, userIdLink);
-
-            if (okCreate) {
-                    System.out.println("Account created:");
-                    System.out.println("Account Number: " + acctNum);
-                    System.out.println("Linked to User ID: " + userIdLink);
-            } else {
-                    System.out.println("Failed to create account. Check that user ID exists.");
-            }
-            break;
-
-                case "4": {
-                    List<String> accounts = manager.getAllAccountsFormatted();
-                    System.out.println("--- All Accounts ---");
-                    if (accounts.isEmpty()) System.out.println("No accounts.");
-                    else accounts.forEach(System.out::println);
-                    break;
-                }
-
-                case "5": {
-                    System.out.print("Enter User ID: ");
-                    int userId = Integer.parseInt(scanner.nextLine());
-                    List<String> accts = manager.getAccountsByUser(userId);
-                    System.out.println("--- Accounts for User " + userId + " ---");
-                    if (accts.isEmpty()) System.out.println("No accounts for that user.");
-                    else accts.forEach(System.out::println);
-                    break;
-                }
-
-                case "6": {
-                    System.out.print("Account number: ");
-                    String accNum = scanner.nextLine().trim();
-
-                    System.out.print("Deposit or Withdraw (D/W): ");
-                    String direction = scanner.nextLine().trim().toUpperCase();
-
-                    System.out.print("Amount: ");
-                    double amt = Double.parseDouble(scanner.nextLine().trim());
-
-                    double delta = direction.equals("D") ? amt : -amt;
-
-                    boolean ok = manager.updateAccountBalance(accNum, delta);
-                    System.out.println(ok ? "Transaction applied." : "Transaction failed.");
-                    break;
-                }
-
-                case "7": {
-                    System.out.print("User ID to update: ");
-                    int uid = Integer.parseInt(scanner.nextLine().trim());
-
-                    System.out.print("New name: ");
-                    String newName = scanner.nextLine();
-
-                    System.out.print("New address: ");
-                    String newAddr = scanner.nextLine();
-
-                    System.out.print("New phone: ");
-                    String newPhone = scanner.nextLine();
-
-                    boolean updated = manager.updateUser(uid, newName, newAddr, newPhone);
-                    System.out.println(updated ? "User updated." : "Update failed.");
-                    break;
-                }
-
-                case "8": {
-                    System.out.print("Account number to delete: ");
-                    String acctDel = scanner.nextLine();
-                    boolean delOk = manager.deleteAccount(acctDel);
-                    System.out.println(delOk ? "Account deleted." : "Delete failed.");
-                    break;
-                }
-
-                case "9": {
-                    System.out.print("User ID to delete: ");
-                    int delUid = Integer.parseInt(scanner.nextLine());
-                    boolean delUserOk = manager.deleteUser(delUid);
-                    System.out.println(delUserOk ? "User deleted." : "Delete failed.");
-                    break;
-                }
-
-                case "10":
-                    quit = true;
-                    System.out.println("Goodbye!");
-                    break;
-
-                default:
-                    System.out.println("Invalid choice.");
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number.");
+            } catch (Exception e) {
+                System.out.println("Unexpected error: " + e.getMessage());
             }
         }
 
-        scanner.close();
+        // Leave Scanner open to avoid premature System.in closure
     }
 }

@@ -19,21 +19,12 @@
  * - It prepares the application for Week 4, where database-backed
  *   functionality will be added to BankManager.
  *
- * No changes to the interface are necessary for Week 3, since
- * interfaces naturally demonstrate abstraction on their own.
+ * Minor changes in interface for Week 5.
  *******************************************************************/
 
 public interface BankInterface {
-
-    // Create a new account for a user
     void createAccount(User user);
-
-    // Display all accounts for a specific user
-    void displayAccounts(User user);
-
-    // Update user information (name, address, phone)
     void updateUserInfo(User user);
-
-    // Process a deposit or withdrawal for an account
     void processTransaction(User user);
+    void displayAccounts(User user);
 }
